@@ -13,11 +13,6 @@ onMounted(() => {
 <template>
   <div class="app-container">
     <el-container class="app-layout">
-      <el-header class="app-header" :style="{ height: 'var(--header-height)' }">
-        <div class="responsive-container h-full flex items-center">
-          <h1 class="app-title">资产管理系统</h1>
-        </div>
-      </el-header>
       <el-main class="app-main">
         <div class="responsive-container h-full">
           <AssetTable />

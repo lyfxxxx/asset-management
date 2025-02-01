@@ -4,7 +4,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import App from './App.vue'
-import './style.css'
+import './style.css'  // Element Plus 样式后引入，确保我们的样式可以覆盖默认样式
 
 const app = createApp(App)
 const pinia = createPinia()
