@@ -16,6 +16,7 @@
       placeholder="选择月份"
       :disabled-date="disabledDate"
       @change="handleMonthChange"
+      :clearable="false"
       class="month-picker"
     />
     

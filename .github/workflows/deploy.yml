@@ -1,0 +1,44 @@
+# 工作流名称
+name: Deploy to GitHub Pages
+
+# 触发条件：在 push 到 main 分支后
+on:
+  push:
+    branches:
+      - main
+
+# 任务
+jobs:
+  build-and-deploy:
+    # 服务器环境：最新版 Ubuntu
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 拉取代码
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # 设置 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 安装依赖
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm install -D tailwindcss@3.3.0 postcss@8.4.31 autoprefixer@10.4.14
+
+      # 打包
+      - name: Build
+        run: npm run build
+
+      # 部署到 GitHub Pages
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist # 部署打包后的 dist 目录
+          branch: gh-pages # 部署到 gh-pages 分支
+          clean: true # 清除旧的文件 

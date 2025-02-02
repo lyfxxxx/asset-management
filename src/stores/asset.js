@@ -97,15 +97,23 @@ export const useAssetStore = defineStore('asset', {
         }
       }
 
-      const currentAmount = currentMonthData.totalAmount
-      const lastAmount = lastMonthData.totalAmount
+      const currentTotal = currentMonthData.assets.reduce((sum, asset) => sum + asset.amount, 0)
+      const lastTotal = lastMonthData.assets.reduce((sum, asset) => sum + asset.amount, 0)
       const currentIncome = currentMonthData.income || 0
 
+      // 如果上月总资产为0，则本月收益也为0
+      if (lastTotal === 0) {
+        return {
+          profitAmount: 0,
+          profitRate: 0
+        }
+      }
+
       // 计算收益金额：当月总资产 - 上月总资产 - 当月收入
-      const profitAmount = Number((currentAmount - lastAmount - currentIncome).toFixed(2))
+      const profitAmount = Number((currentTotal - lastTotal - currentIncome).toFixed(2))
       
-      // 计算收益率：收益金额 / 上月总资产 * 100%（不再乘以12进行年化）
-      const profitRate = lastAmount === 0 ? 0 : Number(((profitAmount / lastAmount) * 100).toFixed(2))
+      // 计算收益率：收益金额 / 上月总资产 * 100%
+      const profitRate = Number(((profitAmount / lastTotal) * 100).toFixed(2))
 
       return {
         profitAmount,
@@ -171,7 +179,7 @@ export const useAssetStore = defineStore('asset', {
         .filter(data => data.yearMonth <= dayjs().format('YYYY-MM'))
         .slice(0, 13) // 获取13个月的数据以计算12个月的收益
 
-      return monthlyData.slice(0, -1).map((data, index) => {
+      const profitData = monthlyData.slice(0, -1).map((data, index) => {
         const nextData = monthlyData[index + 1]
         if (!nextData) {
           return {
@@ -183,7 +191,7 @@ export const useAssetStore = defineStore('asset', {
         const currentTotal = data.assets.reduce((sum, asset) => sum + asset.amount, 0)
         const prevTotal = nextData.assets.reduce((sum, asset) => sum + asset.amount, 0)
         
-        // 如果上月总资产为0，则跳过计算收益
+        // 如果上月总资产为0，则本月收益为0
         if (prevTotal === 0) {
           return {
             yearMonth: data.yearMonth,
@@ -199,6 +207,9 @@ export const useAssetStore = defineStore('asset', {
           profitAmount: Number(profitAmount.toFixed(2))
         }
       })
+
+      // 返回反转后的数据，保持原有顺序（从早到晚）
+      return profitData.reverse()
     },
 
     // 添加计算总资产的辅助方法
