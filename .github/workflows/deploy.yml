@@ -1,11 +1,15 @@
 # 工作流名称
 name: Deploy to GitHub Pages
 
-# 触发条件：在 push 到 main 分支后
+# 触发条件：在 push 到 master 分支后
 on:
   push:
     branches:
       - master
+
+# 权限配置
+permissions:
+  contents: write
 
 # 任务
 jobs:
@@ -17,6 +21,8 @@ jobs:
       # 拉取代码
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
       # 设置 Node.js 环境
       - name: Setup Node.js
@@ -41,4 +47,5 @@ jobs:
         with:
           folder: dist # 部署打包后的 dist 目录
           branch: gh-pages # 部署到 gh-pages 分支
-          clean: true # 清除旧的文件 
+          clean: true # 清除旧的文件
+          token: ${{ secrets.GITHUB_TOKEN }} # 使用 GitHub 自动生成的 token 
